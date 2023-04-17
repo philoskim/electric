@@ -1,6 +1,7 @@
 (ns hyperfiddle.electric
   (:refer-clojure :exclude [eval def defn fn for empty? partial])
   (:require [clojure.core :as cc]
+            [contrib.cljs-target :refer [do-browser]]
             [hyperfiddle.electric.impl.compiler :as c]
             [hyperfiddle.electric.impl.runtime :as r]
             [hyperfiddle.electric.impl.for :refer [map-by]]
@@ -157,8 +158,26 @@ executors are allowed (i.e. to control max concurrency, timeouts etc). Currently
    ;;     ClojureScript do not have vars at runtime and will not analyze or emit vars meta. No need to quote.
    `(def ~(vary-meta symbol assoc ::c/node (if (:js-globals &env) init `(quote ~init))))))
 
-(cc/defn -get-system-time-ms [_] #?(:clj (System/currentTimeMillis) :cljs (js/Date.now)))
-(hyperfiddle.electric/def system-time-ms "ms since 1970 Jan 1" (new (m/sample -get-system-time-ms <clock)))
+(cc/defn -get-system-time-ms [& [_]] #?(:clj (System/currentTimeMillis) :cljs (js/Date.now)))
+
+; DOM event utilities promoted due to visibility-state being critical
+#?(:cljs (cc/defn -listen [node typ f opts] (.addEventListener node typ f opts) #(.removeEventListener node typ f)))
+#?(:cljs (cc/defn event* [node typ f! opts] ; f! is discrete
+           (->> (m/observe (cc/fn [!] 
+                             (! nil)
+                             (-listen node typ #(-> % f! !) (clj->js opts))))
+             (m/relieve {}))))
+
+(def <dom-visibility-state #?(:cljs (do-browser (->> (event* js/document "visibilitychange" identity {})
+                                                  (m/latest (cc/fn [_] (.-visibilityState js/document)))))))
+
+(hyperfiddle.electric/def dom-visibility-state (client (new (identity <dom-visibility-state)))) ; starts Pending on server
+
+(hyperfiddle.electric/def system-time-ms "ms since 1970 Jan 1" 
+  (if (= "visible" dom-visibility-state)
+    (new (m/sample -get-system-time-ms <clock))
+    (throw (Pending.)))) ; tab is hidden, no clock. (This guards NPEs in userland)
+
 (hyperfiddle.electric/def system-time-secs "seconds since 1970 Jan 1" (/ system-time-ms 1000.0))
 
 (cc/defn -check-fn-arity! [name expected actual]
@@ -331,9 +350,10 @@ running on a remote host.
   (let [[client server] (c/analyze
                           (assoc &env ::c/peers-config {::c/local :cljs ::c/remote :clj})
                           `(with-zero-config-entrypoint ~@body))]
-    `(hyperfiddle.electric-client/boot-with-retry
+    `(hyperfiddle.electric-client/reload-when-stale
+      (hyperfiddle.electric-client/boot-with-retry
        ~(r/emit (gensym) client)
-       (hyperfiddle.electric-client/connector (quote ~server)))))
+       (hyperfiddle.electric-client/connector (quote ~server))))))
 
 ;; WIP: user space socket reconnection
 

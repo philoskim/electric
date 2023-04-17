@@ -1,5 +1,6 @@
 (ns prod
-  (:require [contrib.datomic-m :as d]
+  (:require clojure.string
+            [contrib.datomic-m :as d]
             [missionary.core :as m]
             [electric-server-java8-jetty9 :refer [start-server!]]
             user-main))
@@ -7,8 +8,11 @@
 (def host "0.0.0.0")
 (def port 8080)
 
+(when (clojure.string/blank? (System/getProperty "HYPERFIDDLE_ELECTRIC_SERVER_VERSION"))
+  (throw (ex-info "$HYPERFIDDLE_ELECTRIC_SERVER_VERSION must be set in prod" {})))
+
 (defn -main [& args]
-  (println "Starting Photon server...")
+  (println "Starting Electric server...")
   (def server (start-server! {:host host :port port :resources-path "public" :manifest-path "public/js/manifest.edn"}))
   (comment (.stop server))
 

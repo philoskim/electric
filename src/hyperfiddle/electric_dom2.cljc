@@ -146,9 +146,8 @@
                (new (unmount-prop node (key prop#) nil))
                nil))))))
 
-#?(:cljs (defn- listen [node typ f opts] (.addEventListener node typ f opts) #(.removeEventListener node typ f)))
-#?(:cljs (defn event* [node typ f opts]
-           (m/relieve {} (m/observe (fn [!] (! nil) (listen node typ #(-> % f !) (clj->js opts)))))))
+#?(:cljs (def listen e/-listen)) ; private
+#?(:cljs (def event* e/event*))
 
 (defmacro on!
   "Call the `callback` clojure function on event.
@@ -200,6 +199,9 @@
                                          x#))]
                      (case state# (::init ::ok) v#, (::err ::pending) (throw v#))))))
 
+#?(:cljs (e/def visibility-state "'hidden' | 'visible'"
+           (new (->> (event* js/document "visibilitychange" identity {}) 
+                  (m/latest #(.-visibilityState js/document))))))
 
 (defmacro on-pending [pending-body & body] `(try (do ~@body) (catch Pending e# ~pending-body (throw e#))))
 
