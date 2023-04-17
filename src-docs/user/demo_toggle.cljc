@@ -7,8 +7,11 @@
 ; a full stack function with both frontend and backend parts,
 ; all defined in the same expression
 
-#?(:clj (defonce !x (atom true))) ; server state
+#?(:clj (defonce !x (atom true)) ; server state
+   :cljs (defonce !client-counter (atom 0)))  ; <--
+
 (e/def x (e/server (e/watch !x))) ; reactive signal derived from atom
+#?(:cljs (e/def client-counter (e/client (e/watch !client-counter)))) ; <--
 
 (e/defn Toggle []
   (e/client
@@ -25,6 +28,13 @@
                  true "ClojureScript (client)"
                  false "Clojure (server)")))
 
+    (dom/div (dom/text "client state: "   ; <--
+               (str client-counter)))     ; <--
+
     (ui/button (e/fn []
                  (e/server (swap! !x not)))
-      (dom/text "toggle client/server"))))
+      (dom/text "toggle client/server"))
+
+    (ui/button (e/fn []                                   ; <--
+                 (e/client (swap! !client-counter inc)))  ; <--
+      (dom/text "increase client-counter") )))            ; <--
