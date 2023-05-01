@@ -31,7 +31,7 @@
             wip.tag-picker
             wip.demo-custom-types
             wip.tracing
-
+            #?(:cljs [debux.cs.electric :refer-macros [clog clogn dbg dbgn]])
             ; this demo require `npm install`
             #_user.demo-reagent-interop
 
@@ -40,6 +40,8 @@
             #_wip.demo-stage-ui4
             #_wip.datomic-browser
             ))
+
+#?(:clj (use 'debux.electric))
 
 (e/defn NotFoundPage []
   (e/client (dom/h1 (dom/text "Page not found"))))
@@ -80,13 +82,16 @@
       ;`wip.datomic-browser/DatomicBrowser wip.datomic-browser/DatomicBrowser
       NotFoundPage)))
 
+(e/def history* nil)
+
 (e/defn Main []
   (binding [history/encode contrib.ednish/encode-uri
-            history/decode #(or (contrib.ednish/decode-path % hf/read-edn-str)
+            history/decode #(or (contrib.ednish/decode-path (dbg %) hf/read-edn-str)
                                [`user.demo-index/Demos])]
-    (history/router (history/HTML5-History.)
-      (set! (.-title js/document) (str (clojure.string/capitalize (name (first history/route))) " - Hyperfiddle"))
-      (binding [dom/node js/document.body]
-        (dom/pre (dom/text (contrib.str/pprint-str history/route)))
-        (let [[page & args] history/route]
-          (e/server (new (Pages. page #_args))))))))
+    (binding [history* (history/HTML5-History.)]
+      (history/router history*
+        (set! (.-title js/document) (str (clojure.string/capitalize (name (first history/route))) " - Hyperfiddle"))
+        (binding [dom/node js/document.body]
+          (dom/pre (dom/text (contrib.str/pprint-str history/route)))
+          (let [[page & args] (dbg history/route)]
+            (e/server (new (Pages. page #_args)))))))))

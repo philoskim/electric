@@ -2,7 +2,8 @@
   (:require
    [hyperfiddle.electric :as e]
    [hyperfiddle.electric-dom2 :as dom]
-   [hyperfiddle.electric-ui4 :as ui]))
+   [hyperfiddle.electric-ui4 :as ui]
+   [hyperfiddle.history :as history]))
 
 ; a full stack function with both frontend and backend parts,
 ; all defined in the same expression
@@ -37,4 +38,8 @@
 
     (ui/button (e/fn []                                   ; <--
                  (e/client (swap! !client-counter inc)))  ; <--
-      (dom/text "increase client-counter") )))            ; <--
+      (dom/text "increase client-counter") )
+
+    (ui/button (e/fn []                                   ; <--
+                   (history/navigate! user-main/history*  [`user.demo-index/Demos]))
+                 (dom/text "to demos") )))
