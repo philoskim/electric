@@ -93,5 +93,5 @@
         (set! (.-title js/document) (str (clojure.string/capitalize (name (first history/route))) " - Hyperfiddle"))
         (binding [dom/node js/document.body]
           (dom/pre (dom/text (contrib.str/pprint-str history/route)))
-          (let [[page & args] (dbg history/route)]
+          (let [[page & args] history/route]
             (e/server (new (Pages. page #_args)))))))))
