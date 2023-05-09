@@ -42,30 +42,30 @@
 (defn main [& args]
   (println "Starting Electric compiler and server...")
   (@shadow-start!) ; serves index.html as well
-  (@rcf-enable! false) ; don't run cljs tests on compile (user may have enabled it at the REPL already)
+  ;(@rcf-enable! false) ; don't run cljs tests on compile (user may have enabled it at the REPL already)
   (@shadow-watch :dev) ; depends on shadow server
   #_(@shadow-release :dev {:debug false})
   ;; todo report clearly if shadow build failed, i.e. due to yarn not being run
   (def server (@start-electric-server! electric-server-config))
-  (comment (.stop server))
-
-  "Datomic Cloud (optional, requires :scratch alias)"
-  (require '[contrib.datomic-m :as d])
-  (when (not-empty (eval '(d/detect-datomic-products)))
-    #_(contrib.datomic-m/install-datomic-onprem)
-    (eval '(contrib.datomic-m/install-datomic-cloud))
-    (def datomic-config {:server-type :dev-local :system "datomic-samples"})
-    ;; install prod globals
-    (def datomic-client (eval '(d/client datomic-config)))
-    (def datomic-conn (m/? (eval '(d/connect datomic-client {:db-name "mbrainz-subset"}))))
-
-    ;; install test globals, which are different
-    (require 'test)
-    (eval '(test/install-test-state)))
-
-  ;; enable RCF after Datomic is loaded – to resolve circular dependency
-  (install-rcf-shadow-hook)
-  (@rcf-enable!))
+  ; (comment (.stop server))
+  ;
+  ; "Datomic Cloud (optional, requires :scratch alias)"
+  ; (require '[contrib.datomic-m :as d])
+  ; (when (not-empty (eval '(d/detect-datomic-products)))
+  ;   #_(contrib.datomic-m/install-datomic-onprem)
+  ;   (eval '(contrib.datomic-m/install-datomic-cloud))
+  ;   (def datomic-config {:server-type :dev-local :system "datomic-samples"})
+  ;   ;; install prod globals
+  ;   (def datomic-client (eval '(d/client datomic-config)))
+  ;   (def datomic-conn (m/? (eval '(d/connect datomic-client {:db-name "mbrainz-subset"}))))
+  ;
+  ;   ;; install test globals, which are different
+  ;   (require 'test)
+  ;   (eval '(test/install-test-state)))
+  ;
+  ; ;; enable RCF after Datomic is loaded – to resolve circular dependency
+  ; (install-rcf-shadow-hook)
+  #_(@rcf-enable!))
 
 ;; shadow-compile vs shadow-release:
 ;; https://shadow-cljs.github.io/docs/UsersGuide.html#_development_mode

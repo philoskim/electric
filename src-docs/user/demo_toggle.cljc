@@ -3,7 +3,8 @@
    [hyperfiddle.electric :as e]
    [hyperfiddle.electric-dom2 :as dom]
    [hyperfiddle.electric-ui4 :as ui]
-   [hyperfiddle.history :as history]))
+   [hyperfiddle.history :as history]
+   #?(:cljs [debux.cs.electric :refer-macros [clog clogn dbg dbgn]]) ))
 
 ; a full stack function with both frontend and backend parts,
 ; all defined in the same expression
@@ -16,13 +17,13 @@
 
 (e/defn Toggle []
   (e/client
-    (dom/h1 (dom/text "Toggle Client/Server"))
+    (dom/h1 (dom/text (dbg "Toggle Client/Server")))
 
     (dom/div
       (dom/text "number type here is: "
         (case x*
-          true (e/client (pr-str (type 1))) ; javascript number type
-          false (e/server (pr-str (type 1)))))) ; java number type
+          true (pr-str (type 1)) ; javascript number type
+          false (e/server {:a 1 :b 2})))) ; java number type
 
     (dom/div (dom/text "current site: "
                (case x*
