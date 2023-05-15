@@ -2,18 +2,20 @@
   (:require
     [hyperfiddle.electric :as e]
     [hyperfiddle.electric-dom2 :as dom]
-    [hyperfiddle.electric-ui4 :as ui]))
+    [hyperfiddle.electric-ui4 :as ui]
+    #?(:cljs [debux.cs.electric :refer-macros [clog clogn dbg dbgn]]) ))
 
-;; https://eugenkiss.github.io/7guis/tasks#counter
+#?(:clj (use 'debux.electric))
 
 #?(:clj (def count-in-server! (atom 0)))
 (e/def count-in-server* (e/server (e/watch count-in-server!)))
 
 
 ;;; e/client와 e/server는 e/def, e/defn, e/fn 내부에서만 호출해야 한다.
-(e/defn Counter1 []
+(e/defn Counter []
   (e/client
-    (dom/p (dom/text (e/client count-in-server*)))
+    (dom/p (dom/text (e/server  (e/watch count-in-server!))))
+    ;(dom/p (dom/text (e/client count-in-server*)))
     (ui/button (e/fn [] (e/server (swap! count-in-server! inc)))
       (dom/text "Count"))))
 
@@ -138,7 +140,7 @@
 ;; user/counter.cljs
 (e/defn Counter9 []
   (e/client
-    (let [!state (atom 0)]
-      (dom/p (dom/text (e/watch !state)))
-      (ui/button (e/fn [] (swap! !state inc))
+    (let [state! (atom 0)]
+      (dom/p (dom/text (e/watch state!)))
+      (ui/button (e/fn [] (swap! state! inc))
         (dom/text "Count") ))))

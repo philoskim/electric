@@ -3,7 +3,8 @@
   (:require [contrib.data :refer [pad]]
             [contrib.str :refer [empty->nil]]
             [hyperfiddle.electric :as e]
-            [hyperfiddle.electric-dom2 :as dom]))
+            [hyperfiddle.electric-dom2 :as dom]
+            #?(:cljs [debux.cs.electric :refer-macros [clog clogn dbg dbgn]]) ))
 
 #?(:clj (defonce !msgs (atom (list))))
 (e/def msgs (e/server (reverse (pad 10 nil (e/watch !msgs)))))
@@ -26,9 +27,11 @@
                             (when (= "Enter" (.-key e))
                               (when-some [v (empty->nil (-> e .-target .-value))]
                                 #_(dom/style {:background-color "yellow"})
-                                (e/server (swap! !msgs #(cons v (take 9 %))))
+                                (e/server (Thread/sleep 30000) (swap! !msgs #(cons v (take 9 %))))
                                 (set! (.-value dom/node) ""))))))
       (catch Pending e
+        (println "Pending...")
+        (clog dom/node :js)
         (dom/style {:background-color "yellow"})))))
 
 ; A chat app. Open it in two tabs. When you type a message, both tabs update.
