@@ -1,14 +1,26 @@
 (ns user.tutorial-7guis-1-counter
+  (:import [hyperfiddle.electric Pending])
   (:require
     [hyperfiddle.electric :as e]
     [hyperfiddle.electric-dom2 :as dom]
-    [hyperfiddle.electric-ui4 :as ui]))
+    [missionary.core :as m] ))
 
-;; https://eugenkiss.github.io/7guis/tasks#counter
+#?(:clj (def counter! (atom 0)))
+(e/def counter (e/server (e/watch counter!)))
 
 (e/defn Counter []
   (e/client
-    (let [!state (atom 0)]
-      (dom/p (dom/text (e/watch !state)))
-      (ui/button (e/fn [] (swap! !state inc))
-        (dom/text "Count")))))
+    (dom/button
+      (let [disabled (try
+                       (dom/on "click" (e/fn [e]
+                                         (e/server
+                                           (case (new (e/task->cp (m/sleep 3000)))
+                                             (swap! counter! inc)))))
+                       false
+                       (catch Pending _
+                         true))]
+        (dom/props {:disabled disabled
+                    :class (str "aaa bbb " (when disabled "disabled"))
+                    :style {:background-color (if disabled "yellow" "green")}}))
+      (dom/text "Count"))
+    (dom/text (e/server counter))))

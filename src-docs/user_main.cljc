@@ -7,6 +7,8 @@
             [hyperfiddle.history :as history]
             [user.demo-index :as demos]
 
+            user.demo-handsontable
+
             user.demo-two-clocks
             user.demo-toggle
             user.demo-system-properties
@@ -28,6 +30,7 @@
             user.demo-color
             user.demo-tic-tac-toe
             user.tutorial-blinker
+
             wip.tag-picker
             wip.demo-custom-types
             wip.tracing
@@ -57,6 +60,7 @@
       `user.demo-explorer/DirectoryExplorer user.demo-explorer/DirectoryExplorer
       ;user.demo-10k-dom/Dom-10k-Elements user.demo-10k-dom/Dom-10k-Elements ; todo too slow to unmount, crashes
       `wip.tag-picker/TagPicker wip.tag-picker/TagPicker
+      `user.demo-handsontable/Persons user.demo-handsontable/Persons
       `user.demo-toggle/Toggle user.demo-toggle/Toggle
       `wip.demo-custom-types/CustomTypes wip.demo-custom-types/CustomTypes
       `user.demo-system-properties/SystemProperties user.demo-system-properties/SystemProperties

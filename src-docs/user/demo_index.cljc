@@ -7,7 +7,8 @@
             [hyperfiddle.history :as router])) ; for link only
 
 (def pages
-  [`user.demo-two-clocks/TwoClocks
+  [`user.demo-handsontable/Persons
+   `user.demo-two-clocks/TwoClocks
    `user.demo-toggle/Toggle
    `user.demo-system-properties/SystemProperties
    `user.demo-chat/Chat
