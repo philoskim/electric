@@ -59,7 +59,7 @@
   (e/client
     ;; person-id+ is triggered by the above < 1 >
     (let [person-details (e/server (read-person-details (e/client person-id+)))]
-      (js/console.log "person-daetails:"
+      (js/console.log "person-details:"
                       (prn-str person-details))   ;; < 2 >
       )))
 
