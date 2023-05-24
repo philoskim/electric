@@ -70,7 +70,8 @@
              [3 "Mary"    "Female"]]
       :colHeaders ["ID" "Name" "Sex"]
       :licenseKey "non-commercial-and-evaluation"
-      :afterOnCellMouseUp on-cell-mouse-up}))
+      :afterOnCellMouseUp on-cell-mouse-up  ;; <-- the mouse-up event handler must be here
+      }))
 
 ;; persons table
 (e/defn Persons []
