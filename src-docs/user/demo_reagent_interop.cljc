@@ -79,8 +79,8 @@
 
 (e/defn ReagentInterop []
   (e/client
-    (e/for [index (range 2)]
-      (dom/h1 (dom/text (str "Reagent/React Interop: " index)))
+    (e/for [index (range 3)]  ;; <-- here
+      (dom/h1 (dom/text (str "Reagent/React Interop: " index)))  ;; <-- here
       (let [[x y] (dom/on! js/document "mousemove" (fn [e] [(.-clientX e) (.-clientY e)]))]
         ;; Adapted from https://recharts.org/en-US/examples/TinyLineChart
         (with-reagent TinyLineChart [{:name "Page A", :uv 4000, :pv 2400, :amt 2400}
