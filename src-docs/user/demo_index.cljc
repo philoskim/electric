@@ -8,6 +8,7 @@
 
 (def pages
   [`user.demo-handsontable/Persons
+   `user.demo-reagent-interop/ReagentInterop
    `user.demo-two-clocks/TwoClocks
    `user.demo-toggle/Toggle
    `user.demo-system-properties/SystemProperties

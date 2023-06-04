@@ -2,6 +2,7 @@
 ;; This demo requires `npm install`
 
 (ns user.demo-reagent-interop
+  #?(:cljs (:require-macros [user.demo-reagent-interop :refer [with-reagent]]))
   (:require [hyperfiddle.electric :as e]
             [hyperfiddle.electric-dom2 :as dom]
             #?(:cljs [reagent.core :as r])
@@ -62,7 +63,7 @@
 ;; Electric Clojure ;;
 ;;;;;;;;;;;;;;;;;;;;;;
 
-(e/defn ReagentInterop []
+#_(e/defn ReagentInterop0 []
   (e/client
     (dom/h1 (dom/text "Reagent/React Interop"))
     (let [[x y] (dom/on! js/document "mousemove" (fn [e] [(.-clientX e) (.-clientY e)]))]
@@ -75,3 +76,18 @@
                                    {:name "Page F", :uv 2390, :pv 3800, :amt 2500}
                                    {:name "Page G", :uv 3490, :pv 4300, :amt 2100}])
       (with-reagent MousePosition x y))))
+
+(e/defn ReagentInterop []
+  (e/client
+    (e/for [index (range 2)]
+      (dom/h1 (dom/text (str "Reagent/React Interop: " index)))
+      (let [[x y] (dom/on! js/document "mousemove" (fn [e] [(.-clientX e) (.-clientY e)]))]
+        ;; Adapted from https://recharts.org/en-US/examples/TinyLineChart
+        (with-reagent TinyLineChart [{:name "Page A", :uv 4000, :pv 2400, :amt 2400}
+                                     {:name "Page B", :uv 3000, :pv 1398, :amt 2210}
+                                     {:name "Page C", :uv 2000, :pv (* 2 y), :amt 2290}  ; inject value
+                                     {:name "Page D", :uv 2780, :pv 3908, :amt 2000}
+                                     {:name "Page E", :uv 1890, :pv 4800, :amt 2181}
+                                     {:name "Page F", :uv 2390, :pv 3800, :amt 2500}
+                                     {:name "Page G", :uv 3490, :pv 4300, :amt 2100}])
+        (with-reagent MousePosition x y)))))

@@ -8,6 +8,7 @@
             [user.demo-index :as demos]
 
             user.demo-handsontable
+            user.demo-reagent-interop
 
             user.demo-two-clocks
             user.demo-toggle
@@ -61,6 +62,7 @@
       ;user.demo-10k-dom/Dom-10k-Elements user.demo-10k-dom/Dom-10k-Elements ; todo too slow to unmount, crashes
       `wip.tag-picker/TagPicker wip.tag-picker/TagPicker
       `user.demo-handsontable/Persons user.demo-handsontable/Persons
+      `user.demo-reagent-interop/ReagentInterop user.demo-reagent-interop/ReagentInterop
       `user.demo-toggle/Toggle user.demo-toggle/Toggle
       `wip.demo-custom-types/CustomTypes wip.demo-custom-types/CustomTypes
       `user.demo-system-properties/SystemProperties user.demo-system-properties/SystemProperties
